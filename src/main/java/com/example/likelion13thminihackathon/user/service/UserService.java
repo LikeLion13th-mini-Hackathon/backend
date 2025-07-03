@@ -40,7 +40,7 @@ public class UserService {
         }
 
         // 3. JWT 토큰 생성
-        String token = jwtUtil.createToken(user.getEmail()); // ✅ 이게 핵심
+        String token = jwtUtil.createToken(user.getEmail());
 
         return token;
     }

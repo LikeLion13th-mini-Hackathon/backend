@@ -1,12 +1,14 @@
 package com.example.likelion13thminihackathon.user.controller;
 
 import com.example.likelion13thminihackathon.user.dto.UserRequestDto;
-import com.example.likelion13thminihackathon.user.service.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import com.example.likelion13thminihackathon.user.dto.UserLoginRequestDto;
 import com.example.likelion13thminihackathon.user.dto.UserLoginResponseDto;
+import com.example.likelion13thminihackathon.user.service.UserService;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -21,9 +23,9 @@ public class UserController {
 
     // 회원가입 API
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody UserRequestDto requestDto) {
+    public ResponseEntity<Map<String, String>> signup(@RequestBody UserRequestDto requestDto) {
         userService.signup(requestDto);
-        return ResponseEntity.ok("회원가입 성공!");
+        return ResponseEntity.ok(Map.of("message", "회원가입 성공!"));
     }
 
     // 로그인 API
