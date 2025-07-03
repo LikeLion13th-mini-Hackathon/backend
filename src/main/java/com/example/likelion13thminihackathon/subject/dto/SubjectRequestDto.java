@@ -17,6 +17,8 @@ public class SubjectRequestDto {
 
     private String grade;
 
-    @NotBlank(message = "학기는 필수입니다.")
-    private String semester;
+    @NotNull
+    private Integer gradeLevel;
+    @NotNull
+    private Integer semester;
 }

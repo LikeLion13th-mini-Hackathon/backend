@@ -49,4 +49,17 @@ public class SubjectController {
 
         return ResponseEntity.ok(Map.of("message", "과목 수정 완료"));
     }
+
+    // 학기별 과목 전체 조회
+    @GetMapping
+    public ResponseEntity<?> getSubjectsBySemester(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam Integer gradeLevel,
+            @RequestParam Integer semester) {
+
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        return ResponseEntity.ok(subjectService.getSubjectsBySemester(user, gradeLevel, semester));
+    }
 }

@@ -16,7 +16,8 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String semester; // 수강학기
+    private Integer gradeLevel; //1 ~ 4학년
+    private Integer semester; // 1 or 2학기
 
     private String subjectName; // 과목명
 
