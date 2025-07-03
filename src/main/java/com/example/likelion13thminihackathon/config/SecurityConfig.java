@@ -32,9 +32,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/login").permitAll() // 🔥 여기 추가됨
+                        .requestMatchers("/api/auth/**", "/api/login", "/api/signup").permitAll()
                         .anyRequest().authenticated()
                 )
+
+
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
