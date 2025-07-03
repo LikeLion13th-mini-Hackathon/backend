@@ -23,7 +23,7 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    // ✅ JWT 토큰 생성
+    // JWT 토큰 생성
     public String createToken(String email) {
         Date now = new Date();
         Date expireTime = new Date(now.getTime() + TOKEN_VALID_TIME);
@@ -36,7 +36,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ✅ 토큰에서 이메일 추출
+    // 토큰에서 이메일 추출
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -46,7 +46,7 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    // ✅ 토큰 만료 여부 확인
+    // 토큰 만료 여부 확인
     public boolean isTokenExpired(String token) {
         Date expiration = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -58,7 +58,7 @@ public class JwtUtil {
         return expiration.before(new Date());
     }
 
-    // ✅ 단순 유효성 검사 (토큰 파싱만)
+    // 단순 유효성 검사 (토큰 파싱만)
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -69,7 +69,7 @@ public class JwtUtil {
         }
     }
 
-    // ✅ 사용자 정보 기반 토큰 유효성 검사 (정석)
+    // 사용자 정보 기반 토큰 유효성 검사 (정석)
     public boolean validateToken(String token, UserDetails userDetails) {
         String email = getEmailFromToken(token);
         return (email != null && email.equals(userDetails.getUsername()) && !isTokenExpired(token));

@@ -11,13 +11,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/subject")
 public class SubjectController {
 
     private final UserRepository userRepository;
-    private final SubjectService subjectService; // ✅ 서비스 주입
+    private final SubjectService subjectService;
 
     // 과목 등록
     @PostMapping
@@ -28,9 +30,9 @@ public class SubjectController {
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
-        subjectService.createSubject(requestDto, user); // ✅ 서비스로 위임
+        subjectService.createSubject(requestDto, user);
 
-        return ResponseEntity.ok("과목 등록 완료");
+        return ResponseEntity.ok(Map.of("message", "과목 등록 완료"));
     }
 
     // 과목 수정
@@ -43,8 +45,8 @@ public class SubjectController {
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
-        subjectService.updateSubject(id, requestDto, user); // ✅ 서비스로 위임
+        subjectService.updateSubject(id, requestDto, user);
 
-        return ResponseEntity.ok("과목 수정 완료");
+        return ResponseEntity.ok(Map.of("message", "과목 수정 완료"));
     }
 }
