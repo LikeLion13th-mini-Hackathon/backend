@@ -1,16 +1,22 @@
 package com.example.likelion13thminihackathon.user.entity;
+
 import com.example.likelion13thminihackathon.user.dto.UserRequestDto;
-import java.time.LocalDate;
-
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Entity
-@Table(name = "users")
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
+
 @Getter
 @NoArgsConstructor
-public class User {
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "users")
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,5 +55,37 @@ public class User {
         this.grade = dto.getGrade();
         this.termsAgreed = dto.isTermsAgreed();
         this.marketingAgreed = dto.isMarketingAgreed();
+    }
+
+    // 여기부터 UserDetails 필수 구현부
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList(); // 현재 권한 없음
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // email을 username으로 사용
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // 계정 만료되지 않음
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // 계정 잠기지 않음
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // 비밀번호 만료되지 않음
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true; // 계정 활성화됨
     }
 }

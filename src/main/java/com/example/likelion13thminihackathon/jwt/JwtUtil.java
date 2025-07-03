@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -12,26 +13,65 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private Key key; // JWT 서명에 사용할 비밀 키
-    private final long TOKEN_VALID_TIME = 1000 * 60 * 60 * 3; // 3시간 동안 유효
+    private Key key; // JWT 서명용 키
+    private final long TOKEN_VALID_TIME = 1000 * 60 * 60 * 3; // 3시간
     private final String SECRET_KEY = "my-super-secret-jwt-key-for-minihackathon1234567890";
 
-    // 서버 시작 시 한 번 실행돼서 key를 초기화해줌
+    // 서버 시작 시 키 초기화
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    // 이메일을 담은 JWT 토큰 생성
+    // ✅ JWT 토큰 생성
     public String createToken(String email) {
         Date now = new Date();
-        Date expireTime = new Date(now.getTime() + TOKEN_VALID_TIME); // 만료 시간
+        Date expireTime = new Date(now.getTime() + TOKEN_VALID_TIME);
 
         return Jwts.builder()
-                .setSubject(email) // 토큰의 주제(subject) 설정: 보통 사용자 식별자 넣음
-                .setIssuedAt(now) // 토큰 발급 시간
-                .setExpiration(expireTime) // 토큰 만료 시간
-                .signWith(key, SignatureAlgorithm.HS256) // 어떤 알고리즘으로 사인할지 (HS256), key 사용
-                .compact(); // 문자열로 토큰을 최종 변환
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(expireTime)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // ✅ 토큰에서 이메일 추출
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    // ✅ 토큰 만료 여부 확인
+    public boolean isTokenExpired(String token) {
+        Date expiration = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+
+        return expiration.before(new Date());
+    }
+
+    // ✅ 단순 유효성 검사 (토큰 파싱만)
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            System.out.println("JWT 유효성 검사 실패: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // ✅ 사용자 정보 기반 토큰 유효성 검사 (정석)
+    public boolean validateToken(String token, UserDetails userDetails) {
+        String email = getEmailFromToken(token);
+        return (email != null && email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }
