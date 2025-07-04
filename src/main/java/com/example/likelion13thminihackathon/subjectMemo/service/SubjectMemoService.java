@@ -1,14 +1,15 @@
 package com.example.likelion13thminihackathon.subjectMemo.service;
 
+import com.example.likelion13thminihackathon.subject.entity.Subject;
+import com.example.likelion13thminihackathon.subject.repository.SubjectRepository;
 import com.example.likelion13thminihackathon.subjectMemo.dto.SubjectMemoRequestDto;
 import com.example.likelion13thminihackathon.subjectMemo.dto.SubjectMemoResponseDto;
-import com.example.likelion13thminihackathon.subject.entity.Subject;
 import com.example.likelion13thminihackathon.subjectMemo.entity.SubjectMemo;
 import com.example.likelion13thminihackathon.subjectMemo.repository.SubjectMemoRepository;
-import com.example.likelion13thminihackathon.subject.repository.SubjectRepository;
 import com.example.likelion13thminihackathon.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,36 +18,67 @@ public class SubjectMemoService {
     private final SubjectMemoRepository subjectMemoRepository;
     private final SubjectRepository subjectRepository;
 
-    // 메모 등록 및 DTO 반환
-    public SubjectMemoResponseDto createMemo(Long subjectId, SubjectMemoRequestDto requestDto, User user) {
+    // 메모 생성
+    @Transactional
+    public SubjectMemoResponseDto saveMemo(Long subjectId, SubjectMemoRequestDto requestDto, User user) {
+        // 1) 과목 존재 및 본인 확인
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new RuntimeException("과목을 찾을 수 없습니다."));
-
-        // 본인 과목인지 확인
         if (!subject.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("본인의 과목에만 메모를 작성할 수 있습니다.");
         }
 
-        // 이미 메모가 존재하는지 확인
-        boolean exists = subjectMemoRepository.existsBySubjectIdAndUserId(subjectId, user.getId());
-        if (exists) {
-            throw new IllegalStateException("이미 이 과목에 대한 메모가 존재합니다.");
-        }
+        // 2) 기존 메모가 있으면 꺼내오고, 없으면 새로 빌드
+        SubjectMemo memo = subjectMemoRepository
+                .findBySubjectIdAndUserId(subjectId, user.getId())
+                .orElseGet(() ->
+                        SubjectMemo.builder()
+                                .user(user)
+                                .subject(subject)
+                                .build()
+                );
 
-        // 새 메모 저장
-        SubjectMemo memo = SubjectMemo.builder()
-                .memo(requestDto.getMemo())
-                .subject(subject)
-                .user(user)
-                .build();
+        // 3) 언제나 덮어쓰기
+        memo.setMemo(requestDto.getMemo());
+        SubjectMemo saved = subjectMemoRepository.save(memo);
 
-        subjectMemoRepository.save(memo);
-
-        // 응답 DTO 생성 및 반환
+        // 4) 응답 DTO
         return SubjectMemoResponseDto.builder()
                 .subjectId(subject.getId())
                 .subjectName(subject.getSubjectName())
-                .memo(memo.getMemo())
+                .memo(saved.getMemo())
                 .build();
+    }
+
+    /**
+     * 메모 조회 (신규면 빈 문자열로)
+     */
+    @Transactional(readOnly = true)
+    public SubjectMemoResponseDto getMemo(Long subjectId, User user) {
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new RuntimeException("과목을 찾을 수 없습니다."));
+        if (!subject.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("본인의 과목만 조회할 수 있습니다.");
+        }
+
+        String memoText = subjectMemoRepository
+                .findBySubjectIdAndUserId(subjectId, user.getId())
+                .map(SubjectMemo::getMemo)
+                .orElse("");
+
+        return SubjectMemoResponseDto.builder()
+                .subjectId(subject.getId())
+                .subjectName(subject.getSubjectName())
+                .memo(memoText)
+                .build();
+    }
+
+
+    @Transactional
+    public void deleteMemo(Long subjectId, User user) {
+        SubjectMemo memo = subjectMemoRepository
+                .findBySubjectIdAndUserId(subjectId, user.getId())
+                .orElseThrow(() -> new RuntimeException("삭제할 메모가 없습니다."));
+        subjectMemoRepository.delete(memo);
     }
 }
