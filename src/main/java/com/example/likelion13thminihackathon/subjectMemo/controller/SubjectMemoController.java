@@ -5,35 +5,47 @@ import com.example.likelion13thminihackathon.subjectMemo.dto.SubjectMemoResponse
 import com.example.likelion13thminihackathon.subjectMemo.service.SubjectMemoService;
 import com.example.likelion13thminihackathon.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/memo")
+@RequiredArgsConstructor
 public class SubjectMemoController {
 
     private final SubjectMemoService subjectMemoService;
 
-    // 메모 등록 API
+    // 메모 조회
+    @GetMapping("/{subjectId}")
+    public ResponseEntity<SubjectMemoResponseDto> getMemo(
+            @PathVariable Long subjectId,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(
+                subjectMemoService.getMemo(subjectId, user)
+        );
+    }
+
+    // 메모 생성·수정 (Upsert)
     @PostMapping("/{subjectId}")
-    public ResponseEntity<?> createMemo(
+    public ResponseEntity<SubjectMemoResponseDto> saveMemo(
             @PathVariable Long subjectId,
             @RequestBody SubjectMemoRequestDto requestDto,
             @AuthenticationPrincipal User user
     ) {
-        try {
-            SubjectMemoResponseDto responseDto = subjectMemoService.createMemo(subjectId, requestDto, user);
-            return ResponseEntity.ok(responseDto);
-        } catch (IllegalStateException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        }
+        return ResponseEntity.ok(
+                subjectMemoService.saveMemo(subjectId, requestDto, user)
+        );
+    }
+
+    // 메모 삭제
+    @DeleteMapping("/{subjectId}")
+    public ResponseEntity<Void> deleteMemo(
+            @PathVariable Long subjectId,
+            @AuthenticationPrincipal User user
+    ) {
+        subjectMemoService.deleteMemo(subjectId, user);
+        return ResponseEntity.noContent().build();
     }
 }

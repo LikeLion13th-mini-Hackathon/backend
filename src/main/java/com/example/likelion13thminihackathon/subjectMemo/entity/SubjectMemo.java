@@ -30,11 +30,16 @@ public class SubjectMemo {
     @Column(columnDefinition = "TEXT")
     private String memo;
 
-    // 생성자
+    // Builder 생성자
     @Builder
     public SubjectMemo(User user, Subject subject, String memo) {
         this.user = user;
         this.subject = subject;
+        this.memo = memo;
+    }
+
+    // 내용 덮어쓰기를 위한 setter
+    public void setMemo(String memo) {
         this.memo = memo;
     }
 }
