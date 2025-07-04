@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class PlannerDTO {
-    private Long userId;
     private String semester;
     private Category category;  // Enum 타입
     private String goal;
@@ -16,3 +15,4 @@ public class PlannerDTO {
     private LocalDateTime updatedAt;
     private Boolean deletedAt;
 }
+
