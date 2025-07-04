@@ -35,4 +35,13 @@ public class PlannerController {
         PlannerDTO plannerDTO = plannerService.getPlanById(id);
         return ResponseEntity.ok(plannerDTO);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deletePlan(@PathVariable Long id) {
+        plannerService.deletePlan(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "플래너 삭제 성공");
+        return ResponseEntity.ok(response);
+    }
+
 }
