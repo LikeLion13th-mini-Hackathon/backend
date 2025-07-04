@@ -67,4 +67,10 @@ public class PlannerService {
 
         return dto;
     }
+
+    public void deletePlan(Long id) {
+        plannerRepository.deleteById(id);
+    }
+
+
 }
