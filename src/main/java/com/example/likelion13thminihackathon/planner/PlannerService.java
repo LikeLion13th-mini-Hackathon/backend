@@ -3,6 +3,8 @@ package com.example.likelion13thminihackathon.planner;
 import com.example.likelion13thminihackathon.user.entity.User;
 import com.example.likelion13thminihackathon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,9 +16,13 @@ public class PlannerService {
     private final PlannerRepository plannerRepository;
     private final UserRepository userRepository;
 
+    // 플래너 등록 (JWT 인증된 사용자 정보에서 user 조회)
     public PlannerEntity addPlan(PlannerDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
         PlannerEntity plannerEntity = PlannerEntity.builder()
                 .user(user)
@@ -29,5 +35,36 @@ public class PlannerService {
                 .build();
 
         return plannerRepository.save(plannerEntity);
+    }
+
+    // 플래너 수정 (JWT 인증된 사용자 정보 기준으로 권한 검증 필요 시 추가 가능)
+    public PlannerEntity updatePlan(Long id, PlannerDTO dto) {
+        PlannerEntity existingPlan = plannerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
+
+        if (dto.getSemester() != null) existingPlan.setSemester(dto.getSemester());
+        if (dto.getCategory() != null) existingPlan.setCategory(dto.getCategory());
+        if (dto.getGoal() != null) existingPlan.setGoal(dto.getGoal());
+
+        existingPlan.setUpdatedAt(LocalDateTime.now());
+        if (dto.getDeletedAt() != null) existingPlan.setDeletedAt(dto.getDeletedAt());
+
+        return plannerRepository.save(existingPlan);
+    }
+
+    // 단일 플래너 조회
+    public PlannerDTO getPlanById(Long id) {
+        PlannerEntity entity = plannerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
+
+        PlannerDTO dto = new PlannerDTO();
+        dto.setSemester(entity.getSemester());
+        dto.setCategory(entity.getCategory());
+        dto.setGoal(entity.getGoal());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
+        dto.setDeletedAt(entity.getDeletedAt());
+
+        return dto;
     }
 }
