@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 @Service
 @RequiredArgsConstructor
 public class PlannerService {
@@ -16,7 +19,7 @@ public class PlannerService {
     private final PlannerRepository plannerRepository;
     private final UserRepository userRepository;
 
-    // 플래너 등록 (JWT 인증된 사용자 정보에서 user 조회)
+    // 플래너 등록 (기존 코드 유지)
     public PlannerEntity addPlan(PlannerDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -37,10 +40,18 @@ public class PlannerService {
         return plannerRepository.save(plannerEntity);
     }
 
-    // 플래너 수정 (JWT 인증된 사용자 정보 기준으로 권한 검증 필요 시 추가 가능)
+    // 플래너 수정 - 권한 체크 추가
     public PlannerEntity updatePlan(Long id, PlannerDTO dto) {
         PlannerEntity existingPlan = plannerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        // 현재 로그인 유저와 플래너 소유자 일치 여부 확인
+        if (!existingPlan.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("권한이 없습니다. 다른 사용자의 플래너를 수정할 수 없습니다.");
+        }
 
         if (dto.getSemester() != null) existingPlan.setSemester(dto.getSemester());
         if (dto.getCategory() != null) existingPlan.setCategory(dto.getCategory());
@@ -52,7 +63,7 @@ public class PlannerService {
         return plannerRepository.save(existingPlan);
     }
 
-    // 단일 플래너 조회
+    // 단일 플래너 조회 (변경 없음)
     public PlannerDTO getPlanById(Long id) {
         PlannerEntity entity = plannerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
@@ -68,9 +79,19 @@ public class PlannerService {
         return dto;
     }
 
+    // 플래너 삭제 - 권한 체크 추가
     public void deletePlan(Long id) {
+        PlannerEntity existingPlan = plannerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        // 현재 로그인 유저와 플래너 소유자 일치 여부 확인
+        if (!existingPlan.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("권한이 없습니다. 다른 사용자의 플래너를 삭제할 수 없습니다.");
+        }
+
         plannerRepository.deleteById(id);
     }
-
-
 }
