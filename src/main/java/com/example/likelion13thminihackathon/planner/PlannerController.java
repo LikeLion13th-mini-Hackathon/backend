@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,10 +31,17 @@ public class PlannerController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PlannerDTO> getPlan(@PathVariable Long id) {
+    @GetMapping
+    public ResponseEntity<PlannerDTO> getPlan(@RequestParam Long id) {
         PlannerDTO plannerDTO = plannerService.getPlanById(id);
         return ResponseEntity.ok(plannerDTO);
+    }
+
+    // ✅ [추가] 카테고리 기반 전체 플래너 조회
+    @GetMapping("/category")
+    public ResponseEntity<List<PlannerDTO>> getPlansByCategory(@RequestParam Category category) {
+        List<PlannerDTO> plans = plannerService.getPlansByCategory(category);
+        return ResponseEntity.ok(plans);
     }
 
     @DeleteMapping("/{id}")
@@ -43,5 +51,4 @@ public class PlannerController {
         response.put("message", "플래너 삭제 성공");
         return ResponseEntity.ok(response);
     }
-
 }
