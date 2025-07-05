@@ -36,4 +36,12 @@ public class GraduationMemoController {
         graduationMemoService.updateMemo(id, newContent);
         return ResponseEntity.ok("메모 수정 완료");
     }
+
+    // 🔹 메모 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMemo(@PathVariable Long id) {
+        graduationMemoService.deleteMemo(id);
+        return ResponseEntity.ok("메모 삭제 완료");
+    }
+
 }
