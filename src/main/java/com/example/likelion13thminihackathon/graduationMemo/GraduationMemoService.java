@@ -44,4 +44,13 @@ public class GraduationMemoService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 메모가 존재하지 않습니다. id=" + id));
         memo.updateContent(newContent);
     }
+
+    // 🔹 메모 삭제
+    @Transactional
+    public void deleteMemo(Long id) {
+        GraduationMemoEntity memo = graduationMemoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메모가 존재하지 않습니다. id=" + id));
+        graduationMemoRepository.delete(memo);
+    }
+
 }
