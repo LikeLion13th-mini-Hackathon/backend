@@ -16,17 +16,22 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer gradeLevel; //1 ~ 4학년
+    @Column(nullable = false)
+    private Integer gradeLevel; // 1 ~ 6학년
+
+    @Column(nullable = false)
     private Integer semester; // 1 or 2학기
 
-    private String subjectName; // 과목명
+    @Column(nullable = true)
+    private String subjectName; // 과목명 (비워도 가능)
 
-    private Integer credit; // 과목 학점
+    @Column(nullable = true)
+    private Integer credit; // 학점 (학점 null이면 계산 제외)
 
-    private String grade; // 과목 성적
+    @Column(nullable = true)
+    private String grade; // 성적 (성적 null이면 계산 제외)
 
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
