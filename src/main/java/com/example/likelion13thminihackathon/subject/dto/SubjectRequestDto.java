@@ -1,7 +1,5 @@
 package com.example.likelion13thminihackathon.subject.dto;
 
-import jakarta.validation.constraints.*;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,16 +7,12 @@ import lombok.Setter;
 @Setter
 public class SubjectRequestDto {
 
+    // 과목명은 비워도 됨
     private String subjectName;
 
-    @Min(value = 1, message = "학점은 1 이상이어야 합니다.")
-    @Max(value = 3, message = "학점은 3 이하이어야 합니다.")
-    private int credit;
+    // 학점: 0~3 사이일 수 있음 (nullable로 변경)
+    private Integer credit;
 
+    // 성적: A+, A, B+ 등 (nullable 허용)
     private String grade;
-
-    @NotNull
-    private Integer gradeLevel;
-    @NotNull
-    private Integer semester;
 }
