@@ -18,7 +18,7 @@ public class PlannerService {
     private final PlannerRepository plannerRepository;
     private final UserRepository userRepository;
 
-    // 플래너 등록
+    // ✅ 플래너 등록
     public PlannerEntity addPlan(PlannerDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -28,7 +28,7 @@ public class PlannerService {
 
         PlannerEntity plannerEntity = PlannerEntity.builder()
                 .user(user)
-                .semester(dto.getSemester())
+                .semester(dto.getSemester())  // ⬅️ 프론트에서 선택한 학기 문자열
                 .category(dto.getCategory())
                 .goal(dto.getGoal())
                 .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now())
@@ -39,7 +39,7 @@ public class PlannerService {
         return plannerRepository.save(plannerEntity);
     }
 
-    // 플래너 수정
+    // ✅ 플래너 수정
     public PlannerEntity updatePlan(Long id, PlannerDTO dto) {
         PlannerEntity existingPlan = plannerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
@@ -54,14 +54,14 @@ public class PlannerService {
         if (dto.getSemester() != null) existingPlan.setSemester(dto.getSemester());
         if (dto.getCategory() != null) existingPlan.setCategory(dto.getCategory());
         if (dto.getGoal() != null) existingPlan.setGoal(dto.getGoal());
+        if (dto.getDeletedAt() != null) existingPlan.setDeletedAt(dto.getDeletedAt());
 
         existingPlan.setUpdatedAt(LocalDateTime.now());
-        if (dto.getDeletedAt() != null) existingPlan.setDeletedAt(dto.getDeletedAt());
 
         return plannerRepository.save(existingPlan);
     }
 
-    // 단일 플래너 조회
+    // ✅ 단일 플래너 조회
     public PlannerDTO getPlanById(Long id) {
         PlannerEntity entity = plannerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
@@ -77,7 +77,7 @@ public class PlannerService {
         return dto;
     }
 
-    // ✅ 카테고리로 전체 플래너 조회 (해당 사용자 기준)
+    // ✅ 카테고리별 플래너 목록 조회
     public List<PlannerDTO> getPlansByCategory(Category category) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -99,7 +99,7 @@ public class PlannerService {
         }).collect(Collectors.toList());
     }
 
-    // 플래너 삭제
+    // ✅ 플래너 삭제
     public void deletePlan(Long id) {
         PlannerEntity existingPlan = plannerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
