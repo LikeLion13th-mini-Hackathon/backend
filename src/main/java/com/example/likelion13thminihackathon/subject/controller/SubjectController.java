@@ -42,7 +42,7 @@ public class SubjectController {
     @GetMapping
     public ResponseEntity<?> getSubjectsBySemester(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam Integer gradeLevel,
+            @RequestParam Integer gradeLevel, // 기타 학기도 받을 수 있게 String!
             @RequestParam Integer semester) {
 
         User user = userRepository.findByEmail(userDetails.getUsername())
