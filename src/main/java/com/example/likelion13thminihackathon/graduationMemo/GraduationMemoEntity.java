@@ -29,4 +29,9 @@ public class GraduationMemoEntity {
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    // ✅ 수정 기능을 위한 메서드
+    public void updateContent(String newContent) {
+        this.content = newContent;
+    }
 }

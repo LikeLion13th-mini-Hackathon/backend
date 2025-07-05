@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/graduation-memo")
@@ -28,4 +29,11 @@ public class GraduationMemoController {
         return ResponseEntity.ok(memos);
     }
 
+    // 🔹 메모 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateMemo(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        String newContent = request.get("content");
+        graduationMemoService.updateMemo(id, newContent);
+        return ResponseEntity.ok("메모 수정 완료");
+    }
 }

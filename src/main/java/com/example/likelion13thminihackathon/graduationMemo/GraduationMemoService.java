@@ -36,4 +36,12 @@ public class GraduationMemoService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    // 🔹 메모 수정
+    @Transactional
+    public void updateMemo(Long id, String newContent) {
+        GraduationMemoEntity memo = graduationMemoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메모가 존재하지 않습니다. id=" + id));
+        memo.updateContent(newContent);
+    }
 }
