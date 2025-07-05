@@ -28,7 +28,7 @@ public class SubjectMemoController {
     }
 
     // 메모 생성·수정 (Upsert)
-    @PostMapping("/{subjectId}")
+    @PutMapping("/{subjectId}")
     public ResponseEntity<SubjectMemoResponseDto> saveMemo(
             @PathVariable Long subjectId,
             @RequestBody SubjectMemoRequestDto requestDto,
