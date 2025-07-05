@@ -17,7 +17,6 @@ public class CollegeDataInitializer implements CommandLineRunner {
         if (collegeRepository.count() == 0) {
             List<CollegeEntity> colleges = List.of(
                     CollegeEntity.builder().name("경영대학").build(),
-                    CollegeEntity.builder().name("계약학과").build(),
                     CollegeEntity.builder().name("공과대학").build(),
                     CollegeEntity.builder().name("글로벌정경대학").build(),
                     CollegeEntity.builder().name("도시과학대학").build(),
