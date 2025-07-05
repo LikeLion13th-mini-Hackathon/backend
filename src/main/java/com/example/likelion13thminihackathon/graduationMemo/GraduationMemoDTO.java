@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class GraduationMemoDTO {
-    private String category;
+    private GraduationMemoCategory category;
     private String content;
-    private LocalDateTime createdAt;  // 🔹 작성일자 포함
+    private LocalDateTime createdAt;
 }
