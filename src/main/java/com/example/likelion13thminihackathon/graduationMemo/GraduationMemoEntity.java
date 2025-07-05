@@ -19,14 +19,13 @@ public class GraduationMemoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔹 카테고리: "학점", "토익", "졸업요건"
-    private String category;
+    // 🔹 카테고리: ENUM으로 변경
+    @Enumerated(EnumType.STRING)
+    private GraduationMemoCategory category;
 
-    // 🔹 메모 내용
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // 🔹 작성 시간
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
