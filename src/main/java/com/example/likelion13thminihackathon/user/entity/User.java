@@ -1,5 +1,6 @@
 package com.example.likelion13thminihackathon.user.entity;
 
+import com.example.likelion13thminihackathon.user.dto.UserMypageUpdateRequestDto;
 import com.example.likelion13thminihackathon.user.dto.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -57,35 +58,42 @@ public class User implements UserDetails {
         this.marketingAgreed = dto.isMarketingAgreed();
     }
 
-    // 여기부터 UserDetails 필수 구현부
+    // 마이페이지 수정용 메서드
+    public void updateMypage(UserMypageUpdateRequestDto dto) {
+        this.nickname = dto.getNickname();
+        this.birthdate = dto.getBirthdate();
+        this.email = dto.getEmail();
+        this.department = dto.getDepartment();
+    }
 
+    // UserDetails 필수 구현 메서드
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // 현재 권한 없음
+        return Collections.emptyList(); // 권한 없음
     }
 
     @Override
     public String getUsername() {
-        return this.email; // email을 username으로 사용
+        return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // 계정 만료되지 않음
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // 계정 잠기지 않음
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // 비밀번호 만료되지 않음
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // 계정 활성화됨
+        return true;
     }
 }
