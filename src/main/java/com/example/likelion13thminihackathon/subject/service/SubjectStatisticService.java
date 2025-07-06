@@ -17,10 +17,12 @@ public class SubjectStatisticService {
     private final SubjectRepository subjectRepository;
 
     // 성적별 점수 매핑 (P, NP는 GPA 계산에서 제외되므로 포함 안 함)
-    private static final Map<String, Double> gradeToPoint = Map.of(
-            "A+", 4.5, "A", 4.0, "B+", 3.5, "B", 3.0,
-            "C+", 2.5, "C", 2.0, "D+", 1.5, "D", 1.0,
-            "F", 0.0
+    private static final Map<String, Double> gradeToPoint = Map.ofEntries(
+            Map.entry("A+", 4.5), Map.entry("A", 4.0), Map.entry("A0", 4.0),
+            Map.entry("B+", 3.5), Map.entry("B", 3.0), Map.entry("B0", 3.0),
+            Map.entry("C+", 2.5), Map.entry("C", 2.0), Map.entry("C0", 2.0),
+            Map.entry("D+", 1.5), Map.entry("D", 1.0), Map.entry("D0", 1.0),
+            Map.entry("F", 0.0)
     );
 
     public SubjectStatisticResponseDto calculateAll(User user) {
