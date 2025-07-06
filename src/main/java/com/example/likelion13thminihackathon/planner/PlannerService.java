@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// ... 생략된 import 및 어노테이션
+
+// 생략된 import ...
+
 @Service
 @RequiredArgsConstructor
 public class PlannerService {
@@ -18,7 +22,6 @@ public class PlannerService {
     private final PlannerRepository plannerRepository;
     private final UserRepository userRepository;
 
-    // ✅ 플래너 등록
     public PlannerEntity addPlan(PlannerDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -28,7 +31,7 @@ public class PlannerService {
 
         PlannerEntity plannerEntity = PlannerEntity.builder()
                 .user(user)
-                .semester(dto.getSemester())  // ⬅️ 프론트에서 선택한 학기 문자열
+                .semester(dto.getSemester())
                 .category(dto.getCategory())
                 .goal(dto.getGoal())
                 .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now())
@@ -39,7 +42,6 @@ public class PlannerService {
         return plannerRepository.save(plannerEntity);
     }
 
-    // ✅ 플래너 수정
     public PlannerEntity updatePlan(Long id, PlannerDTO dto) {
         PlannerEntity existingPlan = plannerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
@@ -48,7 +50,7 @@ public class PlannerService {
         String email = authentication.getName();
 
         if (!existingPlan.getUser().getEmail().equals(email)) {
-            throw new RuntimeException("권한이 없습니다. 다른 사용자의 플래너를 수정할 수 없습니다.");
+            throw new RuntimeException("권한이 없습니다.");
         }
 
         if (dto.getSemester() != null) existingPlan.setSemester(dto.getSemester());
@@ -61,12 +63,12 @@ public class PlannerService {
         return plannerRepository.save(existingPlan);
     }
 
-    // ✅ 단일 플래너 조회
     public PlannerDTO getPlanById(Long id) {
         PlannerEntity entity = plannerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
 
         PlannerDTO dto = new PlannerDTO();
+        dto.setId(entity.getId());
         dto.setSemester(entity.getSemester());
         dto.setCategory(entity.getCategory());
         dto.setGoal(entity.getGoal());
@@ -77,7 +79,6 @@ public class PlannerService {
         return dto;
     }
 
-    // ✅ 카테고리별 플래너 목록 조회
     public List<PlannerDTO> getPlansByCategory(Category category) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -89,6 +90,7 @@ public class PlannerService {
 
         return entities.stream().map(entity -> {
             PlannerDTO dto = new PlannerDTO();
+            dto.setId(entity.getId());
             dto.setSemester(entity.getSemester());
             dto.setCategory(entity.getCategory());
             dto.setGoal(entity.getGoal());
@@ -99,7 +101,29 @@ public class PlannerService {
         }).collect(Collectors.toList());
     }
 
-    // ✅ 플래너 삭제
+    // ✅ 학기 + 카테고리로 조회
+    public List<PlannerDTO> getPlansByCategoryAndSemester(Category category, Semester semester) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        List<PlannerEntity> entities = plannerRepository.findByUserAndCategoryAndSemester(user, category, semester);
+
+        return entities.stream().map(entity -> {
+            PlannerDTO dto = new PlannerDTO();
+            dto.setId(entity.getId());
+            dto.setSemester(entity.getSemester());
+            dto.setCategory(entity.getCategory());
+            dto.setGoal(entity.getGoal());
+            dto.setCreatedAt(entity.getCreatedAt());
+            dto.setUpdatedAt(entity.getUpdatedAt());
+            dto.setDeletedAt(entity.getDeletedAt());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
     public void deletePlan(Long id) {
         PlannerEntity existingPlan = plannerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Planner not found with id: " + id));
@@ -108,9 +132,33 @@ public class PlannerService {
         String email = authentication.getName();
 
         if (!existingPlan.getUser().getEmail().equals(email)) {
-            throw new RuntimeException("권한이 없습니다. 다른 사용자의 플래너를 삭제할 수 없습니다.");
+            throw new RuntimeException("권한이 없습니다.");
         }
 
         plannerRepository.deleteById(id);
     }
+
+    public List<PlannerDTO> getPlansBySemester(Semester semester) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        List<PlannerEntity> entities = plannerRepository.findByUserAndSemester(user, semester);
+
+        return entities.stream().map(entity -> {
+            PlannerDTO dto = new PlannerDTO();
+            dto.setId(entity.getId());  // ✅ plannerId 포함
+            dto.setSemester(entity.getSemester());
+            dto.setCategory(entity.getCategory());
+            dto.setGoal(entity.getGoal());
+            dto.setCreatedAt(entity.getCreatedAt());
+            dto.setUpdatedAt(entity.getUpdatedAt());
+            dto.setDeletedAt(entity.getDeletedAt());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
 }
