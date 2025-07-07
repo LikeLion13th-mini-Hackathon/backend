@@ -32,7 +32,4 @@ public class UserRequestDto {
     @Min(value = 1, message = "학년은 1 이상이어야 합니다.")
     @Max(value = 6, message = "학년은 6 이하이어야 합니다.")
     private int grade; // 학년
-
-    private boolean termsAgreed; // 서비스 동의
-    private boolean marketingAgreed; // 마케팅 동의
 }
