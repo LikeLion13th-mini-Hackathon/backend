@@ -61,7 +61,8 @@ public class SecurityConfig {
         // ⭐ 여기에 Netlify 주소 추가
         config.setAllowedOrigins(List.of(
                 "https://babyhackathon-test.netlify.app",
-                "https://chukchuk-haksa.netlify.app"
+                "https://chukchuk-haksa.netlify.app",
+                "http://44.202.10.128:8081"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
