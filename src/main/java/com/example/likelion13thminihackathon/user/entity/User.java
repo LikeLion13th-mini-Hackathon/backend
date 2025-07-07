@@ -41,11 +41,6 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private int grade;
 
-    @Column(nullable = false)
-    private boolean termsAgreed;
-
-    @Column(nullable = false)
-    private boolean marketingAgreed;
 
     public User(UserRequestDto dto) {
         this.nickname = dto.getNickname();
@@ -54,8 +49,6 @@ public class User implements UserDetails {
         this.birthdate = dto.getBirthdate();
         this.department = dto.getDepartment();
         this.grade = dto.getGrade();
-        this.termsAgreed = dto.isTermsAgreed();
-        this.marketingAgreed = dto.isMarketingAgreed();
     }
 
     // 마이페이지 수정용 메서드
