@@ -41,9 +41,15 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ✅ CORS 프리플라이트 허용
-                        .requestMatchers("/api/auth/**", "/api/login", "/api/signup").permitAll()
-                        .anyRequest().authenticated()
+                                // ✅ OPTIONS 요청(CORS preflight) 허용
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                                // ✅ 개발 중 전체 허용 (배포 시 필요한 API만 제한하세요)
+                                .requestMatchers("/**").permitAll()
+
+                        // 🔒 배포용 설정 예시 (나중에 교체 가능)
+                        // .requestMatchers("/api/auth/**", "/api/login", "/api/signup").permitAll()
+                        // .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -58,11 +64,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // ⭐ 여기에 Netlify 주소 추가
+        // ✅ 허용할 프론트 도메인들 (Netlify 등)
         config.setAllowedOrigins(List.of(
-                "https://babyhackathon-test.netlify.app",
-                "https://chukchuk-haksa.netlify.app",
-                "http://44.202.10.128:8081"
+                "https://babyhackathon-test.netlify.app", // 프론트 테스트 도메인
+                "https://chukchuk-haksa.netlify.app", // 프론트 도메인
+                "http://13.125.232.46",
+                "https://chukchuk-haksa.cloud" // 백엔드 도메인
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
@@ -74,4 +81,3 @@ public class SecurityConfig {
         return source;
     }
 }
-
