@@ -55,12 +55,6 @@ public class GraduationRequirementInit implements CommandLineRunner {
                 GraduationRequirementEntity.builder()
                         .departmentName("산업경영공학과")
                         .additionalRequirements("""
-                            ✅ 졸업논문: 실기발표, D급 이상
-
-                            ✅ 영어졸업인증:
-                            - TOEIC 990 / TOEFL(iBT) 120 / NEW TEPS 990 / IELTS 9 / SPEAKING 200 / WRITING 200 / OPIc AD
-                            - 예술체육대학, 야간학과(부): TOEIC 600 / TOEFL(iBT) 68 / NEW TEPS 257 / IELTS 5.5 / SPEAKING 110 / WRITING 120 / OPIc IL
-
                             ✅ 졸업학점:
                             - ~2019학번: 140
                             - 2020~2022: 137
