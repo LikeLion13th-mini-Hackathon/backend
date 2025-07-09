@@ -33,12 +33,19 @@ public class AchievementService {
 
     public AchievementResponseDto getByUser(Long userId) {
         Achievement achievement = repository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("저장된 학기 정보가 없습니다."));
+                .orElse(
+                        Achievement.builder()
+                                .userId(userId)
+                                .totalSemester(0)
+                                .currentSemester(0)
+                                .build()
+                );
         return toResponse(achievement);
     }
 
     private AchievementResponseDto toResponse(Achievement achievement) {
-        int rate = (int) ((double) achievement.getCurrentSemester() / achievement.getTotalSemester() * 100);
+        int rate = (achievement.getTotalSemester() == 0) ? 0 :
+                (int) ((double) achievement.getCurrentSemester() / achievement.getTotalSemester() * 100);
         int remaining = achievement.getTotalSemester() - achievement.getCurrentSemester();
         String message = getMessageByRate(rate);
 

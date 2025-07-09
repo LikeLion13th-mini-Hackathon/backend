@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class GraduationMemoDTO {
+    private Long id;
     private GraduationMemoCategory category;
     private String content;
     private LocalDateTime createdAt;

@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -21,7 +22,7 @@ public class SubjectController {
 
     private final UserRepository userRepository;
     private final SubjectService subjectService;
-    private final SubjectStatisticService subjectStatisticService; // ✅ 추가
+    private final SubjectStatisticService subjectStatisticService;
 
     // 개별 과목 수정 (실시간 저장)
     @PatchMapping("/{id}")
@@ -35,14 +36,18 @@ public class SubjectController {
 
         subjectService.updateSubject(user, id, dto);
 
-        return ResponseEntity.ok(Map.of("message", "과목 수정 완료"));
+        // ✅ Map.of 대신 HashMap 사용 (500 에러 방지)
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "과목 수정 완료");
+
+        return ResponseEntity.ok(response);
     }
 
     // 학기별 과목 전체 조회
     @GetMapping
     public ResponseEntity<?> getSubjectsBySemester(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam Integer gradeLevel, // 기타 학기도 받을 수 있게 String!
+            @RequestParam Integer gradeLevel,
             @RequestParam Integer semester) {
 
         User user = userRepository.findByEmail(userDetails.getUsername())

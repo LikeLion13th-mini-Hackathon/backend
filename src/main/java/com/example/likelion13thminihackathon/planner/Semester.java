@@ -18,7 +18,6 @@ public enum Semester {
     SIXTH_YEAR_SECOND("6학년 2학기"),
     ETC("기타 학기");
 
-
     private final String label;
 
     Semester(String label) {

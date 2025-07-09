@@ -64,12 +64,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // ✅ 허용할 프론트 도메인들 (Netlify 등)
+        // 허용할 프론트 도메인들 (Netlify 등)
         config.setAllowedOrigins(List.of(
                 "https://babyhackathon-test.netlify.app", // 프론트 테스트 도메인
                 "https://chukchuk-haksa.netlify.app", // 프론트 도메인
                 "http://13.125.232.46",
-                "https://chukchuk-haksa.cloud" // 백엔드 도메인
+                "https://chukchuk-haksa.cloud", // 백엔드 도메인
+                "http://localhost:3000" // 프론트 로컬 테스트
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
