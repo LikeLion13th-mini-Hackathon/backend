@@ -30,6 +30,7 @@ public class GraduationMemoService {
         return graduationMemoRepository.findAllByCategory(category)
                 .stream()
                 .map(entity -> GraduationMemoDTO.builder()
+                        .id(entity.getId())  // 여기만 추가!
                         .category(entity.getCategory())
                         .content(entity.getContent())
                         .createdAt(entity.getCreatedAt())
@@ -52,5 +53,4 @@ public class GraduationMemoService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 메모가 존재하지 않습니다. id=" + id));
         graduationMemoRepository.delete(memo);
     }
-
 }

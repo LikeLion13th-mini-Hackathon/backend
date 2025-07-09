@@ -11,7 +11,12 @@ public enum Semester {
     THIRD_YEAR_FIRST("3학년1학기"),
     THIRD_YEAR_SECOND("3학년2학기"),
     FOURTH_YEAR_FIRST("4학년1학기"),
-    FOURTH_YEAR_SECOND("4학년2학기");
+    FOURTH_YEAR_SECOND("4학년2학기"),
+    FIFTH_YEAR_FIRST("5학년 1학기"),
+    FIFTH_YEAR_SECOND("5학년 2학기"),
+    SIXTH_YEAR_FIRST("6학년 1학기"),
+    SIXTH_YEAR_SECOND("6학년 2학기"),
+    ETC("기타 학기");
 
     private final String label;
 
